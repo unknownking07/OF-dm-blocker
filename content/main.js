@@ -21,7 +21,16 @@
   let settings = { ...(S ? S.SYNC_DEFAULTS : { enabled: true, threshold: C.THRESHOLD, keywords: null, allowlist: [], blocklist: [], revealMode: "session" }) };
 
   function isOnRequests() {
-    return location.pathname.startsWith("/messages/requests");
+    const p = location.pathname;
+    if (/^\/messages\/(requests|additional|spam)/.test(p)) return true;
+    // DOM heading fallback — covers cases where the SPA doesn't change the URL
+    // for the "Additional messages" sub-tab on /messages/requests.
+    const headers = document.querySelectorAll('h1, h2, [role="heading"]');
+    for (const h of headers) {
+      const t = (h.textContent || "").trim().toLowerCase();
+      if (t === "message requests" || t === "additional messages") return true;
+    }
+    return false;
   }
 
   function nodeText(el) {
