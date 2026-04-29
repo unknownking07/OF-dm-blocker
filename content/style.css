@@ -1,0 +1,65 @@
+[data-testid="conversation"].ofblock-filtered {
+  position: relative !important;
+  max-height: 64px !important;
+  overflow: hidden !important;
+  transition: max-height 0.18s ease;
+}
+
+[data-testid="conversation"].ofblock-filtered > *:not(.ofblock-overlay) {
+  filter: blur(8px) !important;
+  pointer-events: none !important;
+}
+
+.ofblock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background: rgba(15, 20, 25, 0.55);
+  z-index: 2;
+  filter: none !important;
+  pointer-events: auto;
+}
+
+.ofblock-pill {
+  background: rgba(29, 155, 240, 0.95);
+  color: #fff;
+  border: none;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font: 600 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.ofblock-pill:hover {
+  background: rgb(29, 155, 240);
+}
+
+.ofblock-explain {
+  font: 11px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  color: rgba(255, 255, 255, 0.78);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.ofblock-link {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  font: 600 11px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  cursor: pointer;
+  padding: 4px 6px;
+  text-decoration: underline;
+  flex-shrink: 0;
+}
+
+.ofblock-link:hover {
+  color: #fff;
+}

@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OF Block — Clean DMs on X</title>
+    <meta
+      name="description"
+      content="Hide OnlyFans / cam-bot spam in your X (Twitter) Message Requests folder. Free, open source, all processing stays on your device."
+    />
+    <meta property="og:title" content="OF Block — Clean DMs on X" />
+    <meta
+      property="og:description"
+      content="Hide OnlyFans / cam-bot spam in your X Message Requests folder. Local, free, no third-party servers."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="topbar">
+      <a class="brand" href="#top">
+        <span class="brand-mark">⊘</span>
+        <span class="brand-name">OF Block</span>
+      </a>
+      <div class="topbar-links">
+        <a href="#how">How it works</a>
+        <a href="#install">Install</a>
+        <a href="#faq">FAQ</a>
+        <a class="topbar-cta" href="#install">Download</a>
+      </div>
+    </nav>
+
+    <main>
+      <section class="hero" id="top">
+        <div class="hero-text">
+          <p class="eyebrow">Free · Local · No tracking</p>
+          <h1>Clean DMs on X.<br />Without blocking real people.</h1>
+          <p class="lede">
+            OnlyFans bots have taken over the Message Requests folder.
+            <strong>OF Block</strong> blurs them in place — keeping the few
+            real DMs that mattered visible. Everything runs in your browser.
+          </p>
+          <div class="hero-cta">
+            <a class="btn-primary" href="#install">Download for Chrome</a>
+            <a class="btn-ghost" href="#how">See how it works ↓</a>
+          </div>
+          <p class="hero-fineprint">
+            Loads as an unpacked extension. ~12 KB. Chrome / Brave / Edge.
+          </p>
+        </div>
+
+        <div class="hero-demo">
+          <div class="demo-frame">
+            <div class="demo-frame-bar">
+              <span class="demo-dot red"></span>
+              <span class="demo-dot yellow"></span>
+              <span class="demo-dot green"></span>
+              <span class="demo-frame-title">x.com / messages / requests</span>
+            </div>
+            <div class="demo-list" id="demoList">
+              <!-- populated by script.js -->
+            </div>
+            <div class="demo-toggle">
+              <button class="toggle-btn" data-state="off" id="toggle">
+                <span class="toggle-knob"></span>
+                <span class="toggle-label">Turn on OF Block</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="signals" id="how">
+        <header>
+          <h2>How it spots a bot</h2>
+          <p>A handful of signals catches almost everything. No ML model, no third-party API.</p>
+        </header>
+        <div class="signals-grid">
+          <article class="signal-card">
+            <div class="sig-num">1</div>
+            <h3>Numeric handle suffix</h3>
+            <p>Real users almost never keep the auto-generated digits. Bots almost always do.</p>
+            <code>@MJoy90602786</code>
+          </article>
+          <article class="signal-card">
+            <div class="sig-num">2</div>
+            <h3>Display name ↔ handle mismatch</h3>
+            <p>Recycled accounts: the operator changes the avatar and display name but can't change the @handle.</p>
+            <code>Julia 🍓 → @OwenMorris74275</code>
+          </article>
+          <article class="signal-card">
+            <div class="sig-num">3</div>
+            <h3>Templated openers</h3>
+            <p>"Are you alone right now?", "wanna go on a date?", "I'm lying in bed bored…" — pulled directly from observed bot scripts.</p>
+            <code>"Want more personal photos?"</code>
+          </article>
+          <article class="signal-card highlight">
+            <div class="sig-num">4</div>
+            <h3>Placeholder leaks <span class="pill">instant flag</span></h3>
+            <p>When the bot forgets to substitute its template variable, it's a dead giveaway.</p>
+            <code>"Hey, [Name], wanna go on a date? 😭"</code>
+          </article>
+          <article class="signal-card">
+            <div class="sig-num">5</div>
+            <h3>Bio + link inspection</h3>
+            <p>For borderline cases, OF Block checks the sender's bio and URL — looking for onlyfans / fansly / linktr.ee / beacons. Cached for 7 days.</p>
+            <code>linktr.ee / fansly.com / onlyfans.com</code>
+          </article>
+          <article class="signal-card safe">
+            <div class="sig-num">✓</div>
+            <h3>Mutuals override</h3>
+            <p>"Followed by … you follow" always wins. Real connections are never filtered.</p>
+            <code>Followed by adah, Maisha, and 16 others</code>
+          </article>
+        </div>
+      </section>
+
+      <section class="install" id="install">
+        <header>
+          <h2>Install in 30 seconds</h2>
+          <p>It's not on the Chrome Web Store yet. Load it as an unpacked extension — same way developer tools are.</p>
+        </header>
+
+        <div class="install-grid">
+          <ol class="install-steps">
+            <li>
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <h3>Download the zip</h3>
+                <p>~12 KB. No bundler, no dependencies — just plain JS.</p>
+                <a class="btn-primary" href="downloads/of-block.zip" download>
+                  ⬇ of-block.zip
+                </a>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <h3>Unzip it</h3>
+                <p>Double-click the file. You'll get an <code>of-block</code> folder.</p>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <h3>Open <code>chrome://extensions</code></h3>
+                <p>Paste that into your address bar. Toggle <strong>Developer mode</strong> on (top right).</p>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <h3>Click "Load unpacked"</h3>
+                <p>Select the <code>of-block</code> folder you just unzipped.</p>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">5</div>
+              <div class="step-body">
+                <h3>Open Message Requests</h3>
+                <p>
+                  Visit
+                  <a href="https://x.com/messages/requests" target="_blank" rel="noopener">x.com/messages/requests</a>.
+                  Bot rows blur instantly.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="faq" id="faq">
+        <h2>FAQ</h2>
+        <details>
+          <summary>Will it block real people?</summary>
+          <p>
+            Probably not. The default sensitivity (3/10) is conservative —
+            most legit DMs hit zero or one signals. If something does get
+            filtered, click <strong>Always show this sender</strong> on the
+            blur overlay to add them to your allowlist permanently.
+          </p>
+        </details>
+        <details>
+          <summary>Does it send my data anywhere?</summary>
+          <p>
+            No. All scoring is local. The only network calls go to
+            <code>x.com</code>'s own GraphQL — the same calls your X tab
+            already makes — using your existing session cookies. There is no
+            third-party server, no analytics, no telemetry.
+          </p>
+        </details>
+        <details>
+          <summary>Why isn't this on the Chrome Web Store?</summary>
+          <p>
+            Listing fee + review queue. The unpacked install works exactly
+            the same and updates whenever you replace the folder. If demand
+            picks up I'll publish it.
+          </p>
+        </details>
+        <details>
+          <summary>What does it do to the rows it filters?</summary>
+          <p>
+            They stay in your inbox — just blurred and collapsed to ~64 px
+            with a <strong>Show</strong> button. Nothing is deleted, marked
+            read, or reported. You can reveal anything anytime.
+          </p>
+        </details>
+        <details>
+          <summary>What if X changes their layout?</summary>
+          <p>
+            The popup will show a "couldn't detect any DM rows" banner. The
+            extension is designed so the row selectors live in one file
+            (<code>content/constants.js</code>) — usually a one-line fix.
+          </p>
+        </details>
+        <details>
+          <summary>Does it work on twitter.com / Brave / Edge?</summary>
+          <p>
+            Yes. <code>twitter.com</code> redirects to <code>x.com</code>
+            but the extension matches both. Any Chromium-based browser with
+            unpacked extension support works (Chrome, Brave, Edge, Arc,
+            Opera).
+          </p>
+        </details>
+      </section>
+
+      <section class="closer">
+        <h2>Take your DMs back.</h2>
+        <a class="btn-primary big" href="#install">Download for Chrome</a>
+      </section>
+    </main>
+
+    <footer>
+      <div class="foot-row">
+        <span>© OF Block</span>
+        <span>·</span>
+        <span>Local-only, no tracking</span>
+      </div>
+      <p class="foot-fine">
+        Not affiliated with X Corp. Use at your own risk — heuristic
+        filtering will occasionally produce false positives. Reveal pills
+        and the allowlist exist for exactly that reason.
+      </p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

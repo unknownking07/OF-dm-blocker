@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>OF Block</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>OF Block</h1>
+      <label class="switch" title="Enable / disable filtering">
+        <input type="checkbox" id="enabled" />
+        <span class="slider"></span>
+      </label>
+    </header>
+
+    <div class="banner" id="selectorWarning" hidden>
+      <strong>Heads up:</strong> couldn't detect any DM rows on the last visit.
+      X may have updated its layout — filtering may be partially broken until
+      the extension is updated.
+    </div>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-num" id="hiddenToday">—</div>
+        <div class="stat-label">Hidden today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="hiddenTotal">—</div>
+        <div class="stat-label">Total hidden</div>
+      </div>
+    </section>
+
+    <section class="threshold">
+      <label for="threshold">
+        <span>Sensitivity</span>
+        <span id="thresholdValue">3</span>
+      </label>
+      <input type="range" id="threshold" min="1" max="10" value="3" />
+      <div class="threshold-hint">
+        <span>Strict</span>
+        <span>Lenient</span>
+      </div>
+    </section>
+
+    <footer>
+      <button id="openOptions" type="button">Settings…</button>
+      <a id="recheck" href="#">Re-check tab</a>
+    </footer>
+
+    <script src="../lib/storage.js"></script>
+    <script src="../lib/messaging.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

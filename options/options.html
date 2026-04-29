@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>OF Block — Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <header class="page-header">
+        <h1>OF Block — Settings</h1>
+        <p class="lede">
+          Filters spam DMs in your X Message Requests folder. All settings stay on your
+          device. The lists below sync across your signed-in Chrome profiles.
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>Sensitivity</h2>
+        <p class="hint">
+          A thread is filtered when its score crosses this number. Lower = stricter (more
+          things get filtered, more false positives). Higher = lenient.
+        </p>
+        <div class="slider-row">
+          <input type="range" id="threshold" min="1" max="10" />
+          <output id="thresholdValue">3</output>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Reveal mode</h2>
+        <p class="hint">
+          Choose what happens after you click "Show" on a filtered row.
+        </p>
+        <select id="revealMode">
+          <option value="session">Session — re-blur on next page load</option>
+          <option value="persist">Persist — stay revealed across reloads</option>
+        </select>
+      </section>
+
+      <section class="card">
+        <h2>Allowlist</h2>
+        <p class="hint">
+          One handle per line, no <code>@</code>. These senders are never filtered.
+        </p>
+        <textarea id="allowlist" rows="6" placeholder="example_handle"></textarea>
+      </section>
+
+      <section class="card">
+        <h2>Blocklist</h2>
+        <p class="hint">
+          One handle per line, no <code>@</code>. These senders are always filtered.
+        </p>
+        <textarea id="blocklist" rows="6" placeholder="example_handle"></textarea>
+      </section>
+
+      <section class="card">
+        <h2>Keywords</h2>
+        <p class="hint">
+          One phrase per line, case-insensitive. Matches in message snippets and bios.
+          Leave empty to use the built-in seed list.
+        </p>
+        <textarea id="keywords" rows="10" placeholder="are you alone&#10;wanna go on a date"></textarea>
+        <button class="link-btn" id="resetKeywords" type="button">Reset to defaults</button>
+      </section>
+
+      <section class="card">
+        <h2>Maintenance</h2>
+        <div class="btn-row">
+          <button id="resetCache" type="button">Clear profile cache</button>
+          <button id="resetStats" type="button">Reset stats</button>
+        </div>
+        <p class="hint">
+          Profile cache holds 7 days of bio lookups so we don't re-fetch the same sender.
+          Clear it if filtering feels stale.
+        </p>
+      </section>
+
+      <section class="card explain">
+        <h2>How filtering works</h2>
+        <ul>
+          <li><strong>Numeric handle suffix</strong> — handle ends in 4+ digits (e.g. <code>@MJoy90602786</code>).</li>
+          <li><strong>Name/handle mismatch</strong> — display name doesn't appear in the handle (recycled accounts).</li>
+          <li><strong>Templated opener</strong> — message snippet matches one of your keywords.</li>
+          <li><strong>Placeholder leak</strong> — snippet contains a literal <code>[name]</code> the bot didn't fill.</li>
+          <li><strong>Emoji name</strong> — display name has decorative emojis (heart, peach, etc.).</li>
+          <li><strong>Bio / link inspection</strong> — sender's profile bio mentions OF/keywords, or links to onlyfans / fansly / linktr.ee / beacons.ai. (Borderline cases only.)</li>
+          <li><strong>Mutuals override</strong> — "Followed by … you follow" always keeps the row visible.</li>
+        </ul>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" hidden>Saved</div>
+
+    <script src="../lib/storage.js"></script>
+    <script src="../content/constants.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>
