@@ -6,6 +6,7 @@
   const thresholdEl = document.getElementById("threshold");
   const thresholdValueEl = document.getElementById("thresholdValue");
   const revealModeEl = document.getElementById("revealMode");
+  const hideModeEl = document.getElementById("hideMode");
   const allowlistEl = document.getElementById("allowlist");
   const blocklistEl = document.getElementById("blocklist");
   const keywordsEl = document.getElementById("keywords");
@@ -44,6 +45,7 @@
     thresholdEl.value = s.threshold;
     thresholdValueEl.textContent = String(s.threshold);
     revealModeEl.value = s.revealMode || "session";
+    hideModeEl.value = s.hideMode || "blur";
     allowlistEl.value = (s.allowlist || []).join("\n");
     blocklistEl.value = (s.blocklist || []).join("\n");
     keywordsEl.value = (s.keywords && s.keywords.length ? s.keywords : C.KEYWORDS).join("\n");
@@ -66,6 +68,12 @@
 
   revealModeEl.addEventListener("change", async (e) => {
     await S.setSettings({ revealMode: e.target.value });
+    toast();
+    notifyContentScripts();
+  });
+
+  hideModeEl.addEventListener("change", async (e) => {
+    await S.setSettings({ hideMode: e.target.value });
     toast();
     notifyContentScripts();
   });

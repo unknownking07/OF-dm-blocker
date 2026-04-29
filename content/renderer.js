@@ -14,17 +14,24 @@ window.__ofblock.renderer = (function () {
     return parts.join(" · ");
   }
 
-  function applyFilter(rowEl, conversationId, decision, handle) {
+  function applyFilter(rowEl, conversationId, decision, handle, mode) {
+    const targetState = mode === "hide" ? "hidden" : "filtered";
     if (
-      rowEl.dataset.ofblockState === "filtered" &&
+      rowEl.dataset.ofblockState === targetState &&
       rowEl.dataset.ofblockConversationId === conversationId
     ) {
       return;
     }
     clearFilter(rowEl);
-    rowEl.dataset.ofblockState = "filtered";
+    rowEl.dataset.ofblockState = targetState;
     rowEl.dataset.ofblockConversationId = conversationId || "";
     rowEl.dataset.ofblockHandle = handle || "";
+
+    if (mode === "hide") {
+      rowEl.classList.add("ofblock-hidden");
+      return;
+    }
+
     rowEl.classList.add("ofblock-filtered");
 
     const overlay = document.createElement("div");
@@ -54,7 +61,7 @@ window.__ofblock.renderer = (function () {
   }
 
   function clearFilter(rowEl) {
-    rowEl.classList.remove("ofblock-filtered");
+    rowEl.classList.remove("ofblock-filtered", "ofblock-hidden");
     delete rowEl.dataset.ofblockState;
     delete rowEl.dataset.ofblockConversationId;
     delete rowEl.dataset.ofblockHandle;

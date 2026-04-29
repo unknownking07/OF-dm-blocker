@@ -128,7 +128,7 @@
       if (!wasFiltered && S) {
         S.bumpStats().catch(() => {});
       }
-      R.applyFilter(rowEl, data.conversationId, decision, data.handle);
+      R.applyFilter(rowEl, data.conversationId, decision, data.handle, settings.hideMode || "blur");
     } else {
       R.clearFilter(rowEl);
       const borderlineFloor = Math.max(1, settings.threshold - 3);

@@ -28,9 +28,20 @@
       </section>
 
       <section class="card">
+        <h2>Filter mode</h2>
+        <p class="hint">
+          What happens to filtered rows? <strong>Hide entirely</strong> removes them from the inbox completely — you won't even see they exist.
+        </p>
+        <select id="hideMode">
+          <option value="blur">Blur with "Show" button (default)</option>
+          <option value="hide">Hide entirely (display: none — no trace)</option>
+        </select>
+      </section>
+
+      <section class="card">
         <h2>Reveal mode</h2>
         <p class="hint">
-          Choose what happens after you click "Show" on a filtered row.
+          When in blur mode: what happens after you click "Show" on a filtered row.
         </p>
         <select id="revealMode">
           <option value="session">Session — re-blur on next page load</option>
