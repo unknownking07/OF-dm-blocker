@@ -45,18 +45,20 @@
   }
 
   function getRowData(rowEl) {
+    // Link is optional — Additional messages rows are unaccepted requests
+    // that don't have a /messages/<id> link until you accept. Try to get a
+    // conversationId from the link if present; fall back to handle below.
     const link = rowEl.querySelector(C.SELECTORS.rowLink);
-    if (!link) return null;
-    const href = link.getAttribute("href") || "";
-    const segments = href.split("/").filter(Boolean);
-    const conversationId = segments[segments.length - 1] || "";
-    if (!conversationId) return null;
+    let conversationId = "";
+    if (link) {
+      const href = link.getAttribute("href") || "";
+      const segments = href.split("/").filter(Boolean);
+      conversationId = segments[segments.length - 1] || "";
+    }
 
     let displayName = "";
     let handle = "";
 
-    // Search across the WHOLE row, not just inside the link — X often puts
-    // name/handle/snippet as siblings of the link rather than children.
     const spans = rowEl.querySelectorAll("span");
     for (const span of spans) {
       const text = nodeText(span).trim();
@@ -75,7 +77,7 @@
 
     // Fallback: aria-label often contains "Name @handle" or similar
     if (!displayName || !handle) {
-      const aria = rowEl.getAttribute("aria-label") || link.getAttribute("aria-label") || "";
+      const aria = rowEl.getAttribute("aria-label") || (link && link.getAttribute("aria-label")) || "";
       if (aria) {
         const handleMatch = aria.match(/@\w+/);
         if (!handle && handleMatch) handle = handleMatch[0];
@@ -124,6 +126,14 @@
     }
     if (snippet.length > C.MAX_SNIPPET_LEN) snippet = snippet.slice(0, C.MAX_SNIPPET_LEN);
     if (snippet.startsWith("You: ")) return null;
+
+    // Synthesize a stable conversationId from the handle when we don't have
+    // a real one (no link / unaccepted request). Use a "syn-" prefix so it
+    // can't collide with X's actual conversation IDs.
+    if (!conversationId && handle) {
+      conversationId = "syn-" + handle.replace(/^@/, "").toLowerCase();
+    }
+    if (!conversationId) return null;
 
     const rowText = rowEl.textContent || "";
 
