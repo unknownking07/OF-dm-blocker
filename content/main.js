@@ -55,7 +55,9 @@
     let displayName = "";
     let handle = "";
 
-    const spans = link.querySelectorAll("span");
+    // Search across the WHOLE row, not just inside the link — X often puts
+    // name/handle/snippet as siblings of the link rather than children.
+    const spans = rowEl.querySelectorAll("span");
     for (const span of spans) {
       const text = nodeText(span).trim();
       if (!text) continue;
@@ -71,6 +73,20 @@
       if (displayName && handle) break;
     }
 
+    // Fallback: aria-label often contains "Name @handle" or similar
+    if (!displayName || !handle) {
+      const aria = rowEl.getAttribute("aria-label") || link.getAttribute("aria-label") || "";
+      if (aria) {
+        const handleMatch = aria.match(/@\w+/);
+        if (!handle && handleMatch) handle = handleMatch[0];
+        if (!displayName) {
+          // Take text before the @handle, before any "·", trim
+          const namePart = aria.split(/[·,@]/)[0].trim();
+          if (namePart && namePart.length < 60) displayName = namePart;
+        }
+      }
+    }
+
     let snippet = "";
     const dirDivs = rowEl.querySelectorAll('div[dir="auto"]');
     for (const div of dirDivs) {
@@ -80,11 +96,25 @@
       if (text.startsWith("@")) continue;
       if (text.length > snippet.length) snippet = text;
     }
+    // Snippet fallback: last span with text longer than display name
+    if (!snippet) {
+      for (const span of spans) {
+        const text = nodeText(span).trim();
+        if (!text || text === displayName || text === handle) continue;
+        if (text.startsWith("@") || /^[A-Z][a-z]{2}\s\d{1,2}$/.test(text)) continue;
+        if (text.length > 20 && text.length > snippet.length) snippet = text;
+      }
+    }
     if (snippet.length > C.MAX_SNIPPET_LEN) snippet = snippet.slice(0, C.MAX_SNIPPET_LEN);
     if (snippet.startsWith("You: ")) return null;
 
     const rowText = rowEl.textContent || "";
     const hasMutuals = C.MUTUALS_REGEX.test(rowText);
+
+    if (!loggedSampleRow) {
+      loggedSampleRow = true;
+      console.log("[ofblock] sample row data:", { conversationId, displayName, handle, snippet, hasMutuals });
+    }
 
     return { conversationId, displayName, handle, snippet, hasMutuals };
   }
@@ -178,6 +208,7 @@
   let firstRowSeen = false;
   let loggedNoRows = false;
   let loggedScanCount = false;
+  let loggedSampleRow = false;
 
   function findRowContainer(link) {
     let el = link;
