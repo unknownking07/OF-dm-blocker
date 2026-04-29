@@ -300,7 +300,18 @@
       const el = findRowContainer(link);
       if (el) containers.add(el);
     }
-    return Array.from(containers);
+    if (containers.size > 0) return Array.from(containers);
+
+    // Strategy 4: last resort — walk up from profile-image avatars. Every DM
+    // row has a profile image; this catches rows even if they have no link
+    // and no testid (e.g. unaccepted requests in Additional messages).
+    const avatars = document.querySelectorAll('img[src*="profile_images"]');
+    const fromAvatars = new Set();
+    for (const img of avatars) {
+      const el = findRowContainer(img);
+      if (el) fromAvatars.add(el);
+    }
+    return Array.from(fromAvatars);
   }
 
   function writePageStatus(active, rowsFound, rowsFiltered, strategy) {
@@ -341,13 +352,22 @@
       }
     } else if (!loggedNoRows) {
       loggedNoRows = true;
-      console.warn("[ofblock] no rows found on", location.pathname, "— DOM may have changed");
-      console.log("[ofblock] diagnostic:", {
-        testid_conversation: document.querySelectorAll('[data-testid="conversation"]').length,
-        testid_cellInnerDiv: document.querySelectorAll('[data-testid="cellInnerDiv"]').length,
-        message_links: document.querySelectorAll('a[href^="/messages/"]').length,
-        sample_link_hrefs: Array.from(document.querySelectorAll('a[href^="/messages/"]')).slice(0, 5).map((a) => a.getAttribute("href")),
-      });
+      const allTestids = Array.from(document.querySelectorAll("[data-testid]"));
+      const dmTestids = Array.from(new Set(allTestids.map((el) => el.getAttribute("data-testid")).filter((t) => t && /conv|mess|DM|cell|inbox|request/i.test(t))));
+      console.warn(
+        "[ofblock] no rows found on",
+        location.pathname,
+        "— DOM survey:",
+        {
+          testid_conversation: document.querySelectorAll('[data-testid="conversation"]').length,
+          testid_cellInnerDiv: document.querySelectorAll('[data-testid="cellInnerDiv"]').length,
+          message_links: document.querySelectorAll('a[href^="/messages/"]').length,
+          profile_images: document.querySelectorAll('img[src*="profile_images"]').length,
+          sample_link_hrefs: Array.from(document.querySelectorAll('a[href^="/messages/"]')).slice(0, 5).map((a) => a.getAttribute("href")),
+          dm_related_testids: dmTestids,
+          primary_column: !!document.querySelector('[data-testid="primaryColumn"]'),
+        }
+      );
     }
     rows.forEach(processRow);
     const filteredCount = document.querySelectorAll(".ofblock-filtered, .ofblock-hidden").length;
@@ -439,8 +459,12 @@
     if (location.pathname !== lastPath) {
       lastPath = location.pathname;
       // SPA navigation: tear down + rebuild so the observer attaches to the
-      // new page's scroll container. Without this, navigating from /requests
-      // to /requests/additional leaves the observer stuck on a detached node.
+      // new page's scroll container. Reset diagnostic flags so we get a
+      // fresh log per page.
+      loggedNoRows = false;
+      loggedScanCount = false;
+      sampleRowCount = 0;
+      firstRowSeen = false;
       deactivate();
       if (isOnRequests()) activate();
     }
