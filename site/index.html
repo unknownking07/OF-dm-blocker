@@ -23,8 +23,14 @@
       </a>
       <div class="topbar-links">
         <a href="#how">How it works</a>
+        <a href="#permissions">Permissions</a>
         <a href="#install">Install</a>
         <a href="#faq">FAQ</a>
+        <a class="topbar-icon" href="https://github.com/unknownking07/OF-dm-blocker" target="_blank" rel="noopener" title="View source on GitHub" aria-label="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+          </svg>
+        </a>
         <a class="topbar-cta" href="#install">Download</a>
       </div>
     </nav>
@@ -44,7 +50,7 @@
             <a class="btn-ghost" href="#how">See how it works ↓</a>
           </div>
           <p class="hero-fineprint">
-            Loads as an unpacked extension. ~12 KB. Chrome / Brave / Edge.
+            Loads unpacked · ~21 KB zipped · Open source · No tracking
           </p>
         </div>
 
@@ -111,6 +117,52 @@
             <p>"Followed by … you follow" always wins. Real connections are never filtered.</p>
             <code>Followed by adah, Maisha, and 16 others</code>
           </article>
+        </div>
+      </section>
+
+      <section class="permissions" id="permissions">
+        <header>
+          <h2>What permissions does it ask for?</h2>
+          <p>The shortest possible list. Here's everything, and why.</p>
+        </header>
+
+        <div class="perms-grid">
+          <article class="perm-card">
+            <span class="perm-tag">storage</span>
+            <p>So it remembers your settings (toggle, sensitivity, allowlist) and caches the bot-detection result for each sender — no need to re-check the same person on every page load.</p>
+            <p class="perm-bound">Stays on your device. Syncs only across your own signed-in Chrome profiles.</p>
+          </article>
+
+          <article class="perm-card">
+            <span class="perm-tag">webRequest</span>
+            <p>Read-only access to the auth headers your X tab is already sending, so the extension can use <em>your existing</em> X session to peek at sender bios for borderline cases.</p>
+            <p class="perm-bound">Does not intercept, redirect, or block any request. Headers are stored in session-only storage and cleared when you close the browser.</p>
+          </article>
+
+          <article class="perm-card">
+            <span class="perm-tag">x.com / twitter.com only</span>
+            <p>Runs <strong>only</strong> on X. The extension cannot read or modify any other website you visit — Chrome enforces this, not us.</p>
+            <p class="perm-bound">Active only on <code>/messages/*</code> routes; everywhere else on X, the script returns immediately.</p>
+          </article>
+        </div>
+
+        <div class="perms-not">
+          <h3>What it does <em>not</em> have access to</h3>
+          <ul class="perm-not-list">
+            <li><span class="x">✕</span> Your other browser tabs (no <code>tabs</code> permission)</li>
+            <li><span class="x">✕</span> Bookmarks, history, downloads</li>
+            <li><span class="x">✕</span> Cookies on any site other than x.com</li>
+            <li><span class="x">✕</span> Clipboard, geolocation, mic, camera</li>
+            <li><span class="x">✕</span> Any third-party server (no telemetry, no analytics)</li>
+            <li><span class="x">✕</span> Your DM contents — only the row metadata visible in the inbox list</li>
+          </ul>
+        </div>
+
+        <div class="trust-bar">
+          <div>
+            <strong>Audit it yourself.</strong> ~21 KB zipped, ~2,900 lines of plain JavaScript. No build step, no minification, no obfuscation. Every file is readable as-is.
+          </div>
+          <a class="btn-ghost" href="https://github.com/unknownking07/OF-dm-blocker" target="_blank" rel="noopener">View source on GitHub →</a>
         </div>
       </section>
 
@@ -186,6 +238,18 @@
             <code>x.com</code>'s own GraphQL — the same calls your X tab
             already makes — using your existing session cookies. There is no
             third-party server, no analytics, no telemetry.
+          </p>
+        </details>
+        <details>
+          <summary>Why does Chrome warn "Read and change all your data on x.com"?</summary>
+          <p>
+            That's Chrome's standard wording for <em>any</em> extension
+            allowed to run on a site — dark-mode toggles, password managers,
+            grammar checkers, all of them get the same dialog. OF Block only
+            modifies DM list rows on <code>/messages/*</code>; it doesn't
+            read your tweets, send messages, or do anything outside that
+            page. <a href="https://github.com/unknownking07/OF-dm-blocker" target="_blank" rel="noopener">The source is public</a> — every file is plain JavaScript and the manifest declares exactly what's
+            requested.
           </p>
         </details>
         <details>

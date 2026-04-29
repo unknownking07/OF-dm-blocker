@@ -41,6 +41,20 @@ Open **Settings…** for:
 - `chrome.storage.sync` syncs your settings across signed-in Chrome profiles only. Profile cache and stats stay on the device.
 - The extension does not log, transmit, or sell any data.
 
+## Permissions
+
+The manifest requests three things and nothing else:
+
+| Permission | Why |
+|---|---|
+| `storage` | Remember your settings (toggle, sensitivity, allowlist) and cache bot-detection results so each sender is only inspected once per 7 days. Stays on your device. |
+| `webRequest` | Read-only access to the auth headers your X tab is already sending, so we can use your existing X session to peek at sender bios. We do not intercept, redirect, or block any request. |
+| `host_permissions: x.com, twitter.com` | The extension runs only on X. Chrome enforces that it cannot read or modify any other site. The content script further early-returns on anything outside `/messages/*`. |
+
+The extension does **not** request `tabs`, `cookies`, `bookmarks`, `history`, `downloads`, `clipboardRead/Write`, `geolocation`, `notifications`, or any host beyond x.com / twitter.com. It does not read DM contents — only row metadata visible in the requests list.
+
+When Chrome shows "Read and change all your data on x.com" during install, that's Chrome's standard wording for any extension allowed to run scripts on a site. The extension only modifies DM list rows on `/messages/*` — every line of source is in this repo, no build step, no minification.
+
 ## How filtering scores work
 
 | Signal | Weight |
