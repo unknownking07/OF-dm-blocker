@@ -14,6 +14,10 @@ window.__ofblock.constants = (function () {
   const LEWD_EMOJI_REGEX = /[\u{1F525}\u{1F48B}\u{1F351}\u{1F4A6}\u{1F618}\u{1F445}\u{1F495}\u{1F975}\u{1F352}\u{1F337}\u{1F496}\u{1F498}\u{1F353}\u{1F60D}]/u;
   const DATE_TOKEN_REGEX = /^[A-Z][a-z]{2}\s\d{1,2}$/;
 
+  // Suggestive substrings in handles (case-insensitive). Picks up things like
+  // @lanavxnasty, @hornyqueen99, @bellathegooonie etc.
+  const SUGGESTIVE_HANDLE_REGEX = /(nasty|horny|kink|slut|whore|naughty|sexy|nudes?|nsfw|xxx|cum|bimbo|boobs|tits|titty|fetish|domme|fap|gooner|gooonie|sissy|spank|babe69|girl69)/i;
+
   const KEYWORDS = [
     "are you alone",
     "are you free",
@@ -41,6 +45,18 @@ window.__ofblock.constants = (function () {
     "linktree",
     "subscribe to my",
     "verify your age",
+    "i wanted to ask",
+    "wanted to ask you",
+    "ask you a random",
+    "random question",
+    "selling a twitter",
+    "selling twitter account",
+    "twitter accounts with",
+    "i represent",
+    "let me bug u",
+    "let me bug you",
+    "bug u with",
+    "guess what i just",
   ];
 
   const WEIGHTS = {
@@ -49,6 +65,7 @@ window.__ofblock.constants = (function () {
     LEWD_EMOJI_BONUS: 1,
     HANDLE_DIGITS: 2,
     NAME_HANDLE_MISMATCH: 2,
+    SUGGESTIVE_HANDLE: 2,
     KEYWORD_PER: 2,
     KEYWORD_CAP: 3,
     PLACEHOLDER_LEAK: 5,
@@ -68,6 +85,7 @@ window.__ofblock.constants = (function () {
     ANY_EMOJI_REGEX,
     LEWD_EMOJI_REGEX,
     DATE_TOKEN_REGEX,
+    SUGGESTIVE_HANDLE_REGEX,
     KEYWORDS,
     WEIGHTS,
     THRESHOLD,

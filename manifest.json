@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "OF Block — Filter spam DM requests on X",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Blurs OnlyFans / cam-promo bot DMs in your X (Twitter) Message Requests folder. All processing stays local.",
   "permissions": ["storage", "webRequest"],
   "host_permissions": [
@@ -24,6 +24,7 @@
         "content/detector.js",
         "content/dom-observer.js",
         "content/renderer.js",
+        "content/in-page-control.js",
         "content/main.js"
       ],
       "css": ["content/style.css"],

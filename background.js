@@ -238,6 +238,12 @@ async function inspectProfile(screenName) {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (!msg || !msg.type) return false;
+  if (msg.type === "openSettings") {
+    chrome.runtime.openOptionsPage(() => {
+      sendResponse({ ok: true });
+    });
+    return true;
+  }
   if (msg.type === "inspectProfile") {
     inspectProfile(msg.screenName).then(sendResponse, (err) =>
       sendResponse({ status: "error", error: err && err.message ? err.message : String(err) })

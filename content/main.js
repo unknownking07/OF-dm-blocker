@@ -426,6 +426,7 @@
     firstRowSeen = false;
     document.addEventListener("click", handleClick, true);
     O.attach(scanAll);
+    if (NS.inPageControl) NS.inPageControl.init();
     console.log("[ofblock] activated on", location.pathname);
     setTimeout(() => {
       if (!firstRowSeen && isOnRequests()) {
@@ -452,6 +453,7 @@
     document
       .querySelectorAll(".ofblock-filtered, .ofblock-hidden")
       .forEach((row) => R.clearFilter(row));
+    if (NS.inPageControl) NS.inPageControl.destroy();
     console.log("[ofblock] deactivated");
   }
 

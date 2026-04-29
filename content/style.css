@@ -67,3 +67,183 @@
 .ofblock-link:hover {
   color: #fff;
 }
+
+/* In-page floating control */
+.ofblock-fab-root {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 99999 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif !important;
+  color: #0f1419 !important;
+}
+.ofblock-fab-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #000;
+  color: rgb(29, 155, 240);
+  border: 2px solid rgba(29, 155, 240, 0.6);
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  padding: 0;
+}
+.ofblock-fab-btn:hover { transform: scale(1.06); }
+.ofblock-fab-btn.off { opacity: 0.45; }
+.ofblock-fab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #000;
+}
+.ofblock-fab-panel {
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  width: 280px;
+  background: #fff;
+  color: #0f1419;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+  font-size: 13px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  .ofblock-fab-panel {
+    background: #16181c;
+    color: #e7e9ea;
+    border-color: #2f3336;
+  }
+}
+.ofblock-fab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.ofblock-fab-title {
+  font-weight: 800;
+  font-size: 15px;
+}
+.ofblock-fab-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.ofblock-fab-switch input { opacity: 0; width: 0; height: 0; }
+.ofblock-fab-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #cfd9de;
+  border-radius: 999px;
+  transition: 0.18s;
+}
+.ofblock-fab-slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.18s;
+}
+.ofblock-fab-switch input:checked + .ofblock-fab-slider { background: rgb(29, 155, 240); }
+.ofblock-fab-switch input:checked + .ofblock-fab-slider::before { transform: translateX(16px); }
+.ofblock-fab-stats-row {
+  display: flex;
+  gap: 16px;
+  padding: 8px 0 12px;
+  border-bottom: 1px solid rgba(127, 127, 127, 0.18);
+  margin-bottom: 12px;
+}
+.ofblock-fab-stat { flex: 1; }
+.ofblock-fab-num {
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.ofblock-fab-stat .ofblock-fab-label {
+  display: block;
+  font-size: 11px;
+  opacity: 0.65;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.ofblock-fab-thresh-head {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.ofblock-fab-thresh-val {
+  color: rgb(29, 155, 240);
+  font-weight: 800;
+}
+.ofblock-fab-threshold {
+  width: 100%;
+  accent-color: rgb(29, 155, 240);
+}
+.ofblock-fab-thresh-hint {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  opacity: 0.6;
+  margin-top: 2px;
+  margin-bottom: 12px;
+}
+.ofblock-fab-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.ofblock-fab-mode label {
+  font-weight: 700;
+  font-size: 12px;
+}
+.ofblock-fab-mode select {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(127, 127, 127, 0.3);
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.ofblock-fab-settings {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: rgb(29, 155, 240);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 0 0;
+  cursor: pointer;
+  text-align: left;
+}
+.ofblock-fab-settings:hover { text-decoration: underline; }

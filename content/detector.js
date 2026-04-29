@@ -13,8 +13,16 @@ window.__ofblock.detector = (function () {
 
   function scoreHandleDigits(handle) {
     if (!handle) return 0;
-    const clean = handle.replace(/^@/, "");
+    // Strip leading @ AND any trailing ellipsis/dots from truncated UI text
+    // (e.g. "@SamStaf73509…" still counts as digit suffix)
+    const clean = handle.replace(/^@/, "").replace(/[….\s]+$/, "");
     return C.HANDLE_DIGIT_SUFFIX.test(clean) ? C.WEIGHTS.HANDLE_DIGITS : 0;
+  }
+
+  function scoreSuggestiveHandle(handle) {
+    if (!handle) return 0;
+    const clean = handle.replace(/^@/, "");
+    return C.SUGGESTIVE_HANDLE_REGEX.test(clean) ? C.WEIGHTS.SUGGESTIVE_HANDLE : 0;
   }
 
   function firstNameToken(displayName) {
@@ -96,6 +104,12 @@ window.__ofblock.detector = (function () {
     if (d > 0) {
       signals.handleDigits = d;
       total += d;
+    }
+
+    const sh = scoreSuggestiveHandle(handle);
+    if (sh > 0) {
+      signals.suggestiveHandle = sh;
+      total += sh;
     }
 
     const m = scoreNameHandleMismatch(displayName, handle);
