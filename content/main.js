@@ -80,9 +80,26 @@
         const handleMatch = aria.match(/@\w+/);
         if (!handle && handleMatch) handle = handleMatch[0];
         if (!displayName) {
-          // Take text before the @handle, before any "·", trim
           const namePart = aria.split(/[·,@]/)[0].trim();
           if (namePart && namePart.length < 60) displayName = namePart;
+        }
+      }
+    }
+
+    // Final fallback: parse the row's plain text content. Works regardless
+    // of DOM structure (spans / divs / Twemoji <img>s).
+    if (!displayName || !handle) {
+      const fullText = (rowEl.textContent || "").replace(/\s+/g, " ").trim();
+      if (!handle) {
+        const m = fullText.match(/@\w+/);
+        if (m) handle = m[0];
+      }
+      if (!displayName && handle) {
+        const idx = fullText.indexOf(handle);
+        if (idx > 0) {
+          const before = fullText.slice(0, idx).trim();
+          const cleaned = before.replace(/[·,]+$/, "").trim();
+          if (cleaned && cleaned.length < 60) displayName = cleaned;
         }
       }
     }
@@ -109,11 +126,34 @@
     if (snippet.startsWith("You: ")) return null;
 
     const rowText = rowEl.textContent || "";
+
+    // Final snippet fallback: try to extract from full row text after handle/date
+    if (!snippet && rowText) {
+      const dateMatch = rowText.match(/[A-Z][a-z]{2}\s\d{1,2}/);
+      if (dateMatch) {
+        const after = rowText.slice(rowText.indexOf(dateMatch[0]) + dateMatch[0].length);
+        snippet = after.replace(/\s+/g, " ").trim().slice(0, C.MAX_SNIPPET_LEN);
+      } else if (handle) {
+        const after = rowText.slice(rowText.indexOf(handle) + handle.length);
+        snippet = after.replace(/\s+/g, " ").trim().slice(0, C.MAX_SNIPPET_LEN);
+      }
+    }
+
     const hasMutuals = C.MUTUALS_REGEX.test(rowText);
 
-    if (!loggedSampleRow) {
-      loggedSampleRow = true;
-      console.log("[ofblock] sample row data:", { conversationId, displayName, handle, snippet, hasMutuals });
+    if (sampleRowCount < 3) {
+      sampleRowCount++;
+      const spanTexts = Array.from(spans).slice(0, 8).map((s) => nodeText(s).trim()).filter(Boolean);
+      console.log("[ofblock] row #" + sampleRowCount + " extracted:", {
+        conversationId,
+        displayName,
+        handle,
+        snippet: snippet.slice(0, 80),
+        hasMutuals,
+        spanTextsSample: spanTexts,
+        rawTextSample: rowText.replace(/\s+/g, " ").trim().slice(0, 180),
+        ariaLabel: rowEl.getAttribute("aria-label"),
+      });
     }
 
     return { conversationId, displayName, handle, snippet, hasMutuals };
@@ -208,7 +248,7 @@
   let firstRowSeen = false;
   let loggedNoRows = false;
   let loggedScanCount = false;
-  let loggedSampleRow = false;
+  let sampleRowCount = 0;
 
   function findRowContainer(link) {
     let el = link;
