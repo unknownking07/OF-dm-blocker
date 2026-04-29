@@ -21,16 +21,10 @@
   let settings = { ...(S ? S.SYNC_DEFAULTS : { enabled: true, threshold: C.THRESHOLD, keywords: null, allowlist: [], blocklist: [], revealMode: "session" }) };
 
   function isOnRequests() {
-    const p = location.pathname;
-    if (/^\/messages\/(requests|additional|spam)/.test(p)) return true;
-    // DOM heading fallback — covers cases where the SPA doesn't change the URL
-    // for the "Additional messages" sub-tab on /messages/requests.
-    const headers = document.querySelectorAll('h1, h2, [role="heading"]');
-    for (const h of headers) {
-      const t = (h.textContent || "").trim().toLowerCase();
-      if (t === "message requests" || t === "additional messages") return true;
-    }
-    return false;
+    // Match any /messages/* path. Specific conversation pages have no list
+    // rows so the observer is a cheap no-op there. The main inbox and
+    // requests/additional/spam tabs all get filtering.
+    return location.pathname.startsWith("/messages");
   }
 
   function nodeText(el) {
@@ -365,11 +359,19 @@
     else deactivate();
   }
 
+  // Belt-and-suspenders: also listen to history events for SPA navigation
+  // in case the 250ms poll misses a quick back-and-forth.
+  window.addEventListener("popstate", () => setTimeout(pollUrl, 50));
+
   let lastPath = "";
   function pollUrl() {
     if (location.pathname !== lastPath) {
       lastPath = location.pathname;
-      checkRoute();
+      // SPA navigation: tear down + rebuild so the observer attaches to the
+      // new page's scroll container. Without this, navigating from /requests
+      // to /requests/additional leaves the observer stuck on a detached node.
+      deactivate();
+      if (isOnRequests()) activate();
     }
   }
 
