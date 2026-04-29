@@ -1,15 +1,15 @@
-[data-testid="conversation"].ofblock-hidden {
+.ofblock-hidden {
   display: none !important;
 }
 
-[data-testid="conversation"].ofblock-filtered {
+.ofblock-filtered {
   position: relative !important;
   max-height: 64px !important;
   overflow: hidden !important;
   transition: max-height 0.18s ease;
 }
 
-[data-testid="conversation"].ofblock-filtered > *:not(.ofblock-overlay) {
+.ofblock-filtered > *:not(.ofblock-overlay) {
   filter: blur(8px) !important;
   pointer-events: none !important;
 }

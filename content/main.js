@@ -182,17 +182,61 @@
   }
 
   let firstRowSeen = false;
+  let loggedNoRows = false;
+
+  function findRows() {
+    // Strategy 1: stable data-testid (works on /messages/requests)
+    const primary = document.querySelectorAll(C.SELECTORS.row);
+    if (primary.length > 0) return Array.from(primary);
+
+    // Strategy 2: cellInnerDiv containers that wrap a /messages/<id> link
+    // (X uses this on Additional messages and other DM list variants)
+    const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
+    const cellHits = [];
+    for (const cell of cells) {
+      const link = cell.querySelector('a[href^="/messages/"]');
+      if (!link) continue;
+      const href = link.getAttribute("href") || "";
+      // Skip nav links like /messages/requests itself
+      if (href === "/messages" || href === "/messages/requests" || href === "/messages/requests/additional") continue;
+      cellHits.push(cell);
+    }
+    if (cellHits.length > 0) return cellHits;
+
+    // Strategy 3: walk up from any /messages/<id> link to a list-item parent
+    const links = document.querySelectorAll('a[href^="/messages/"]');
+    const containers = new Set();
+    for (const link of links) {
+      const href = link.getAttribute("href") || "";
+      const tail = href.replace(/^\/messages\//, "");
+      if (!tail || tail === "requests" || tail === "requests/additional") continue;
+      let el = link.parentElement;
+      let depth = 0;
+      while (el && depth < 10) {
+        const role = el.getAttribute && el.getAttribute("role");
+        if (role === "listitem" || role === "button" || el.tagName === "LI" || el.tagName === "ARTICLE") {
+          containers.add(el);
+          break;
+        }
+        el = el.parentElement;
+        depth++;
+      }
+    }
+    return Array.from(containers);
+  }
 
   function scanAll() {
     if (!isOnRequests()) return;
-    const rows = document.querySelectorAll(C.SELECTORS.row);
-    if (rows.length > 0 && !firstRowSeen) {
-      firstRowSeen = true;
-      try {
-        chrome.storage.local.set({ selectorWarning: null });
-      } catch (e) {
-        void 0;
+    const rows = findRows();
+    if (rows.length > 0) {
+      if (!firstRowSeen) {
+        firstRowSeen = true;
+        try { chrome.storage.local.set({ selectorWarning: null }); } catch (e) { void 0; }
       }
+      loggedNoRows = false;
+    } else if (!loggedNoRows) {
+      loggedNoRows = true;
+      console.warn("[ofblock] no rows found on", location.pathname, "— DOM may have changed; please report at https://github.com/unknownking07/OF-dm-blocker/issues");
     }
     rows.forEach(processRow);
   }
@@ -263,7 +307,7 @@
     O.detach();
     decisionsCache.clear();
     document
-      .querySelectorAll(`${C.SELECTORS.row}.ofblock-filtered`)
+      .querySelectorAll(".ofblock-filtered, .ofblock-hidden")
       .forEach((row) => R.clearFilter(row));
     console.log("[ofblock] deactivated");
   }
