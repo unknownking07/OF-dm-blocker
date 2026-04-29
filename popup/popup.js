@@ -25,6 +25,29 @@
     if (r.selectorWarning) {
       selectorWarningEl.hidden = false;
     }
+
+    const ps = await chrome.storage.local.get({ pageStatus: null });
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const statusDetail = document.getElementById("statusDetail");
+    const status = ps.pageStatus;
+    if (!status || Date.now() - status.lastScan > 60_000) {
+      statusDot.dataset.state = "idle";
+      statusText.textContent = "Not active — open x.com/messages/requests";
+      statusDetail.textContent = "";
+    } else if (!status.active) {
+      statusDot.dataset.state = "idle";
+      statusText.textContent = "Inactive on " + status.url;
+      statusDetail.textContent = "";
+    } else if (status.rowsFound === 0) {
+      statusDot.dataset.state = "warn";
+      statusText.textContent = "Active but found 0 rows";
+      statusDetail.textContent = "X may have changed DOM. Check DevTools console for [ofblock] logs.";
+    } else {
+      statusDot.dataset.state = "ok";
+      statusText.textContent = "Active on " + status.url;
+      statusDetail.textContent = `${status.rowsFound} rows scanned · ${status.rowsFiltered} filtered · via ${status.strategy}`;
+    }
   }
 
   enabledEl.addEventListener("change", async (e) => {

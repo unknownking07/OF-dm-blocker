@@ -183,6 +183,29 @@
 
   let firstRowSeen = false;
   let loggedNoRows = false;
+  let loggedScanCount = false;
+
+  function findRowContainer(link) {
+    let el = link;
+    for (let i = 0; i < 10; i++) {
+      el = el.parentElement;
+      if (!el) return null;
+      const testid = el.getAttribute && el.getAttribute("data-testid");
+      const role = el.getAttribute && el.getAttribute("role");
+      if (testid === "conversation" || testid === "cellInnerDiv") return el;
+      if (role === "listitem" || role === "button") return el;
+      if (el.tagName === "LI" || el.tagName === "ARTICLE") return el;
+      // Heuristic: if parent has 3+ children, el is likely a row in a list
+      const parent = el.parentElement;
+      if (parent && parent.children.length >= 3) {
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 200 && rect.height > 30 && rect.height < 220) {
+          return el;
+        }
+      }
+    }
+    return null;
+  }
 
   function findRows() {
     // Strategy 1: stable data-testid (works on /messages/requests)
@@ -190,55 +213,80 @@
     if (primary.length > 0) return Array.from(primary);
 
     // Strategy 2: cellInnerDiv containers that wrap a /messages/<id> link
-    // (X uses this on Additional messages and other DM list variants)
     const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
     const cellHits = [];
     for (const cell of cells) {
       const link = cell.querySelector('a[href^="/messages/"]');
       if (!link) continue;
       const href = link.getAttribute("href") || "";
-      // Skip nav links like /messages/requests itself
-      if (href === "/messages" || href === "/messages/requests" || href === "/messages/requests/additional") continue;
+      const tail = href.replace(/^\/messages\//, "");
+      if (!tail || tail === "requests" || tail === "additional" || tail === "spam" || tail === "requests/additional") continue;
       cellHits.push(cell);
     }
     if (cellHits.length > 0) return cellHits;
 
-    // Strategy 3: walk up from any /messages/<id> link to a list-item parent
+    // Strategy 3: walk up from /messages/<id> links using a smart heuristic
     const links = document.querySelectorAll('a[href^="/messages/"]');
     const containers = new Set();
     for (const link of links) {
       const href = link.getAttribute("href") || "";
       const tail = href.replace(/^\/messages\//, "");
-      if (!tail || tail === "requests" || tail === "requests/additional") continue;
-      let el = link.parentElement;
-      let depth = 0;
-      while (el && depth < 10) {
-        const role = el.getAttribute && el.getAttribute("role");
-        if (role === "listitem" || role === "button" || el.tagName === "LI" || el.tagName === "ARTICLE") {
-          containers.add(el);
-          break;
-        }
-        el = el.parentElement;
-        depth++;
-      }
+      if (!tail || tail === "requests" || tail === "additional" || tail === "spam" || tail === "requests/additional") continue;
+      const el = findRowContainer(link);
+      if (el) containers.add(el);
     }
     return Array.from(containers);
   }
 
+  function writePageStatus(active, rowsFound, rowsFiltered, strategy) {
+    try {
+      chrome.storage.local.set({
+        pageStatus: {
+          url: location.pathname,
+          active,
+          rowsFound,
+          rowsFiltered,
+          strategy,
+          lastScan: Date.now(),
+        },
+      });
+    } catch (e) { void 0; }
+  }
+
   function scanAll() {
-    if (!isOnRequests()) return;
+    if (!isOnRequests()) {
+      writePageStatus(false, 0, 0, "not-on-filter-page");
+      return;
+    }
     const rows = findRows();
+    let strategy = "none";
     if (rows.length > 0) {
+      // Identify which strategy matched
+      const first = rows[0];
+      const tid = first.getAttribute && first.getAttribute("data-testid");
+      strategy = tid === "conversation" ? "testid-conversation" : tid === "cellInnerDiv" ? "testid-cellInnerDiv" : "walk-up-heuristic";
       if (!firstRowSeen) {
         firstRowSeen = true;
         try { chrome.storage.local.set({ selectorWarning: null }); } catch (e) { void 0; }
       }
       loggedNoRows = false;
+      if (!loggedScanCount) {
+        loggedScanCount = true;
+        console.log("[ofblock] scanning", rows.length, "rows on", location.pathname, "via", strategy);
+      }
     } else if (!loggedNoRows) {
       loggedNoRows = true;
-      console.warn("[ofblock] no rows found on", location.pathname, "— DOM may have changed; please report at https://github.com/unknownking07/OF-dm-blocker/issues");
+      console.warn("[ofblock] no rows found on", location.pathname, "— DOM may have changed");
+      console.log("[ofblock] diagnostic:", {
+        testid_conversation: document.querySelectorAll('[data-testid="conversation"]').length,
+        testid_cellInnerDiv: document.querySelectorAll('[data-testid="cellInnerDiv"]').length,
+        message_links: document.querySelectorAll('a[href^="/messages/"]').length,
+        sample_link_hrefs: Array.from(document.querySelectorAll('a[href^="/messages/"]')).slice(0, 5).map((a) => a.getAttribute("href")),
+      });
     }
     rows.forEach(processRow);
+    const filteredCount = document.querySelectorAll(".ofblock-filtered, .ofblock-hidden").length;
+    writePageStatus(true, rows.length, filteredCount, strategy);
   }
 
   function handleClick(e) {
