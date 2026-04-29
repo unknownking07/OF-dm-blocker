@@ -5,6 +5,8 @@ node_modules/
 *.log
 *.tmp
 
+.wrangler/
+
 .env
 .env.local
 .env.*.local
